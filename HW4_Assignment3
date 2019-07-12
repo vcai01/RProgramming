@@ -1,0 +1,32 @@
+# 2. Find the best hospital in a state
+data <- read.csv("outcome-of-care-measures.csv", na.strings = "Not Available", stringsAsFactors=FALSE)
+# select column by position
+data_selected <- data[c(2, 7, 11, 17, 23)]
+names(data_selected) <- c("Hospital.Name", "State", "heart attack", "heart failure", "pneumonia")
+
+best <- function(state, outcome) {
+    dat <- select(data_selected, c("Hospital.Name", "State", outcome))
+    state_data <- filter(dat, State == state)
+    # it will generate wrong output if na.omit() is done right after read.csv()
+    state_df <- na.omit(state_data)
+    state_list <- unique(state_data$State)
+    disease <- c("heart attack", "heart failure", "pneumonia")
+    if(!(state %in% state_list)) {
+        return(stop("invalid state"))
+    }
+    if(outcome == "heart attack") {
+        data_arranged <- arrange(state_df, `heart attack`)
+        return(data_arranged[1,1])
+    }
+    if(outcome == "heart failure") {
+        data_arranged <- arrange(state_df, `heart failure`)
+        return(data_arranged[1,1])
+    }
+    if(outcome == "pneumonia") {
+        data_arranged <- arrange(state_df, pneumonia)
+        return(data_arranged[1,1])
+    }
+    if(!(outcome %in% disease)) {
+        return(stop("invalid outcome"))
+    }
+}
